@@ -29,4 +29,4 @@ SELECT
   marketing_segment,
   CURRENT_TIMESTAMP() as load_timestamp
 FROM
-  ${ref("customers")}
+  ${ref("dwh_bronze", "customers")}

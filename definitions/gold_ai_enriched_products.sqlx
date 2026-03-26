@@ -26,7 +26,7 @@ FROM
         unit_price,
         CONCAT('Summarize this product in one catchy sentence for a marketing campaign based on its tags: ', tags) AS prompt
       FROM
-        ${ref("products")}
+        ${ref("dwh_silver", "products")}
     ),
     STRUCT(
       0.2 AS temperature,

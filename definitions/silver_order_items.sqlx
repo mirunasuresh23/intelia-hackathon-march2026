@@ -18,4 +18,4 @@ SELECT
   return_date,
   CURRENT_TIMESTAMP() as load_timestamp
 FROM
-  ${ref("order_items")}
+  ${ref("dwh_bronze", "order_items")}
