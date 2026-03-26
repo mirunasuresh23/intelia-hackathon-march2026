@@ -10,10 +10,10 @@ SELECT
   SUM(oi.quantity * oi.unit_price_at_purchase) as total_revenue,
   COUNT(DISTINCT o.order_id) as total_orders
 FROM
-  ${ref("orders")} o
+  ${ref("dwh_silver", "orders")} o
 JOIN
-  ${ref("order_items")} oi ON o.order_id = oi.order_id
+  ${ref("dwh_silver", "order_items")} oi ON o.order_id = oi.order_id
 JOIN
-  ${ref("products")} p ON oi.product_id = p.product_id
+  ${ref("dwh_silver", "products")} p ON oi.product_id = p.product_id
 GROUP BY
   1

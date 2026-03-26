@@ -31,4 +31,4 @@ SELECT
   actual_delivery_date,
   CURRENT_TIMESTAMP() as load_timestamp
 FROM
-  ${ref("orders")}
+  ${ref("dwh_bronze", "orders")}
