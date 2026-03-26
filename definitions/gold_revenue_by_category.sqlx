@@ -1,0 +1,19 @@
+config {
+  type: "view",
+  schema: "dwh_gold",
+  name: "revenue_by_category",
+  description: "Analytical view showing revenue by product category"
+}
+
+SELECT
+  p.category,
+  SUM(oi.quantity * oi.unit_price_at_purchase) as total_revenue,
+  COUNT(DISTINCT o.order_id) as total_orders
+FROM
+  ${ref("orders")} o
+JOIN
+  ${ref("order_items")} oi ON o.order_id = oi.order_id
+JOIN
+  ${ref("products")} p ON oi.product_id = p.product_id
+GROUP BY
+  1

@@ -1,0 +1,36 @@
+config {
+  type: "view",
+  schema: "dwh_gold",
+  name: "ai_enriched_products",
+  description: "Gold view with AI-generated product summaries"
+}
+
+-- Note: This requires the gemini_model to already exist in BigQuery.
+-- Since Dataform doesn't natively support ML.GENERATE_TEXT in SQLX blocks for DDL without special config,
+-- we use a direct select but Dataform will wrap it in a CREATE VIEW.
+
+SELECT
+  product_id,
+  product_name,
+  category,
+  unit_price,
+  ml_generate_text_result AS ai_summary
+FROM
+  ML.GENERATE_TEXT(
+    MODEL `miruna-sandpit.dwh_silver.gemini_model`,
+    (
+      SELECT
+        product_id,
+        product_name,
+        category,
+        unit_price,
+        CONCAT('Summarize this product in one catchy sentence for a marketing campaign based on its tags: ', tags) AS prompt
+      FROM
+        ${ref("products")}
+    ),
+    STRUCT(
+      0.2 AS temperature,
+      100 AS max_output_tokens,
+      TRUE AS flatten_json_output
+    )
+  )

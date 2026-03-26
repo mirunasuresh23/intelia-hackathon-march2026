@@ -1,0 +1,32 @@
+config {
+  type: "table",
+  schema: "dwh_silver",
+  name: "customers",
+  description: "Cleaned and typed customer data"
+}
+
+SELECT
+  customer_id,
+  TRIM(first_name) as first_name,
+  TRIM(last_name) as last_name,
+  LOWER(TRIM(email)) as email,
+  phone,
+  date_of_birth,
+  gender,
+  registration_date,
+  country,
+  city,
+  acquisition_channel,
+  customer_tier,
+  is_email_subscribed,
+  is_sms_subscribed,
+  preferred_device,
+  preferred_category,
+  loyalty_points,
+  account_status,
+  last_login_date,
+  referral_source_id,
+  marketing_segment,
+  CURRENT_TIMESTAMP() as load_timestamp
+FROM
+  ${ref("customers")}

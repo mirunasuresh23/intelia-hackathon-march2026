@@ -1,0 +1,21 @@
+config {
+  type: "table",
+  schema: "dwh_silver",
+  name: "order_items",
+  description: "Cleaned and typed order item data"
+}
+
+SELECT
+  order_item_id,
+  order_id,
+  product_id,
+  CAST(quantity AS INT64) as quantity,
+  CAST(unit_price_at_purchase AS FLOAT64) as unit_price_at_purchase,
+  CAST(discount_applied AS FLOAT64) as discount_applied,
+  CAST(line_total AS FLOAT64) as line_total,
+  is_returned,
+  return_reason,
+  return_date,
+  CURRENT_TIMESTAMP() as load_timestamp
+FROM
+  ${ref("order_items")}

@@ -1,0 +1,30 @@
+config {
+  type: "table",
+  schema: "dwh_silver",
+  name: "products",
+  description: "Cleaned and typed product data"
+}
+
+SELECT
+  product_id,
+  sku,
+  TRIM(product_name) as product_name,
+  category,
+  subcategory,
+  brand,
+  CAST(unit_cost AS FLOAT64) as unit_cost,
+  CAST(unit_price AS FLOAT64) as unit_price,
+  discount_eligible,
+  CAST(stock_quantity AS INT64) as stock_quantity,
+  CAST(weight_kg AS FLOAT64) as weight_kg,
+  supplier_id,
+  is_active,
+  created_date,
+  last_updated_date,
+  average_rating,
+  review_count,
+  return_rate,
+  tags,
+  CURRENT_TIMESTAMP() as load_timestamp
+FROM
+  ${ref("products")}
