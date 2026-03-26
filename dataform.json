@@ -1,5 +1,5 @@
 {
-  "defaultProject": "miruna-sandpit",
+  "defaultDatabase": "miruna-sandpit",
   "defaultDataset": "dwh_silver",
   "defaultLocation": "US",
   "assertionDataset": "dwh_assertions"
