@@ -19,3 +19,8 @@ variable "git_repo_url" {
   description = "The URL of the Git repository for Dataform"
   type        = string
 }
+
+variable "source_bucket_name" {
+  description = "The GCS bucket name for source code"
+  type        = string
+}
