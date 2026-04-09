@@ -1,0 +1,67 @@
+main:
+  steps:
+    - init:
+        assign:
+          - base_url: "https://dataform.googleapis.com/v1beta1"
+          - project_id: ${sys.get_env("GCP_PROJECT_ID")}
+          - region: ${sys.get_env("GCP_LOCATION")}
+          - repo_name: "intelia-hackathon-repo"
+          - repo_path: ${"projects/" + project_id + "/locations/" + region + "/repositories/" + repo_name}
+          
+    - createCompilationResult:
+        call: http.post
+        args:
+          url: ${base_url + "/" + repo_path + "/compilationResults"}
+          auth:
+            type: OAuth2
+          body:
+            gitCommitish: "main"
+        result: compilationResult
+
+    - createWorkflowInvocation:
+        call: http.post
+        args:
+          url: ${base_url + "/" + repo_path + "/workflowInvocations"}
+          auth:
+            type: OAuth2
+          body:
+            compilationResult: ${compilationResult.body.name}
+        result: invocationResult
+
+    - getInvocation:
+        call: http.get
+        args:
+          url: ${base_url + "/" + invocationResult.body.name}
+          auth:
+            type: OAuth2
+        result: invocationStatus
+
+    - checkStatus:
+        switch:
+          - condition: ${invocationStatus.body.state == "RUNNING"}
+            next: wait
+          - condition: ${invocationStatus.body.state == "SUCCEEDED"}
+            next: triggerArchiving
+        next: failWorkflow
+
+    - wait:
+        call: sys.sleep
+        args:
+          seconds: 15
+        next: getInvocation
+
+    - failWorkflow:
+        raise: "Dataform execution failed."
+
+    - triggerArchiving:
+        call: http.post
+        args:
+          url: ${sys.get_env("ARCHIVE_FUNCTION_URL")}
+          auth:
+            type: OIDC
+          body:
+            bucket_name: "dwh_bronze_bucket" # This will be passed via terraform variables ideally
+        result: archiveResult
+
+    - final:
+        return: ${archiveResult.body}

@@ -8,7 +8,7 @@
 -- 2. Create the Generative AI Model
 CREATE OR REPLACE MODEL `miruna-sandpit.dwh_silver.gemini_model`
 REMOTE WITH CONNECTION `miruna-sandpit.us.vertex-ai-conn`
-OPTIONS (ENDPOINT = 'gemini-1.5-flash');
+OPTIONS (ENDPOINT = 'gemini-2.5-flash');
 
 -- 3. Meaningful GenAI Application: Product Summary Enrichment
 -- This creates a view in the Gold layer that uses AI to summarize product features.
@@ -18,7 +18,7 @@ SELECT
   product_name,
   category,
   unit_price,
-  ml_generate_text_result AS ai_summary
+  ml_generate_text_llm_result AS ai_summary
 FROM
   ML.GENERATE_TEXT(
     MODEL `miruna-sandpit.dwh_silver.gemini_model`,

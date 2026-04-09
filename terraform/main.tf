@@ -8,13 +8,17 @@ terraform {
 }
 
 provider "google" {
-  project = var.project_id
-  region  = var.region
+  project               = var.project_id
+  region                = var.region
+  billing_project       = var.project_id
+  user_project_override = true
 }
 
 provider "google-beta" {
-  project = var.project_id
-  region  = var.region
+  project               = var.project_id
+  region                = var.region
+  billing_project       = var.project_id
+  user_project_override = true
 }
 
 # 1. Enable APIs
@@ -28,6 +32,26 @@ resource "google_project_service" "dataform" {
 
 resource "google_project_service" "secretmanager" {
   service = "secretmanager.googleapis.com"
+}
+
+resource "google_project_service" "cloudfunctions" {
+  service = "cloudfunctions.googleapis.com"
+}
+
+resource "google_project_service" "cloudbuild" {
+  service = "cloudbuild.googleapis.com"
+}
+
+resource "google_project_service" "artifactregistry" {
+  service = "artifactregistry.googleapis.com"
+}
+
+resource "google_project_service" "run" {
+  service = "run.googleapis.com"
+}
+
+resource "google_project_service" "cloudscheduler" {
+  service = "cloudscheduler.googleapis.com"
 }
 
 # 2. Secret Manager for Dataform Git Auth
@@ -67,11 +91,12 @@ resource "google_bigquery_dataset" "gold" {
 resource "google_bigquery_table" "bronze_customers" {
   dataset_id = google_bigquery_dataset.bronze.dataset_id
   table_id   = "customers"
+  deletion_protection = false
 
   external_data_configuration {
     autodetect    = true
     source_format = "CSV"
-    source_uris   = ["gs://${var.bucket_name}/customers.csv"]
+    source_uris   = ["gs://${var.bucket_name}/customers/*.csv"]
     csv_options {
       skip_leading_rows = 1
       quote             = "\""
@@ -85,10 +110,11 @@ resource "google_bigquery_table" "bronze_customers" {
 resource "google_bigquery_table" "bronze_products" {
   dataset_id = google_bigquery_dataset.bronze.dataset_id
   table_id   = "products"
+  deletion_protection = false
   external_data_configuration {
     autodetect    = true
     source_format = "CSV"
-    source_uris   = ["gs://${var.bucket_name}/products.csv"]
+    source_uris   = ["gs://${var.bucket_name}/products/*.csv"]
     csv_options { 
       skip_leading_rows = 1 
       quote             = "\""
@@ -99,10 +125,11 @@ resource "google_bigquery_table" "bronze_products" {
 resource "google_bigquery_table" "bronze_orders" {
   dataset_id = google_bigquery_dataset.bronze.dataset_id
   table_id   = "orders"
+  deletion_protection = false
   external_data_configuration {
     autodetect    = true
     source_format = "CSV"
-    source_uris   = ["gs://${var.bucket_name}/orders.csv"]
+    source_uris   = ["gs://${var.bucket_name}/orders/*.csv"]
     csv_options { 
       skip_leading_rows = 1 
       quote             = "\""
@@ -113,10 +140,11 @@ resource "google_bigquery_table" "bronze_orders" {
 resource "google_bigquery_table" "bronze_order_items" {
   dataset_id = google_bigquery_dataset.bronze.dataset_id
   table_id   = "order_items"
+  deletion_protection = false
   external_data_configuration {
     autodetect    = true
     source_format = "CSV"
-    source_uris   = ["gs://${var.bucket_name}/order_items.csv"]
+    source_uris   = ["gs://${var.bucket_name}/order_items/*.csv"]
     csv_options { 
       skip_leading_rows = 1 
       quote             = "\""
@@ -128,6 +156,7 @@ resource "google_bigquery_table" "bronze_order_items" {
 resource "google_bigquery_table" "silver_customers" {
   dataset_id = google_bigquery_dataset.silver.dataset_id
   table_id   = "customers"
+  deletion_protection = false
   schema     = <<EOF
 [
   {"name": "customer_id", "type": "STRING", "mode": "REQUIRED"},
@@ -159,6 +188,7 @@ EOF
 resource "google_bigquery_table" "silver_products" {
   dataset_id = google_bigquery_dataset.silver.dataset_id
   table_id   = "products"
+  deletion_protection = false
   schema     = <<EOF
 [
   {"name": "product_id", "type": "STRING", "mode": "REQUIRED"},
@@ -188,6 +218,7 @@ EOF
 resource "google_bigquery_table" "silver_orders" {
   dataset_id = google_bigquery_dataset.silver.dataset_id
   table_id   = "orders"
+  deletion_protection = false
   schema     = <<EOF
 [
   {"name": "order_id", "type": "STRING", "mode": "REQUIRED"},
@@ -221,6 +252,7 @@ EOF
 resource "google_bigquery_table" "silver_order_items" {
   dataset_id = google_bigquery_dataset.silver.dataset_id
   table_id   = "order_items"
+  deletion_protection = false
   schema     = <<EOF
 [
   {"name": "order_item_id", "type": "STRING", "mode": "REQUIRED"},
