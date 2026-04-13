@@ -23,4 +23,5 @@ variable "git_repo_url" {
 variable "source_bucket_name" {
   description = "The GCS bucket name for source code"
   type        = string
+  default     = "miruna-intelia-hackathon-source-code"
 }
