@@ -1,0 +1,13 @@
+config {
+  type: "table",
+  schema: "dwh_gold",
+  name: "customer_segments",
+  description: "Executed customer segment predictions materialized for dashboarding"
+}
+
+SELECT
+  *
+FROM
+  ML.PREDICT(MODEL ${ref("dwh_gold", "ml_segmentation_model")}, 
+    (SELECT * FROM ${ref("dwh_silver", "ml_features_customer")})
+  )

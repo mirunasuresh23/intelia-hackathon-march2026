@@ -1,0 +1,16 @@
+config {
+  type: "table",
+  schema: "dwh_gold",
+  name: "customer_churn_predictions",
+  description: "Live materialized churn probability for all active customers"
+}
+
+SELECT
+  *
+FROM
+  ML.PREDICT(MODEL ${ref("dwh_gold", "ml_churn_model")}, 
+    (
+      SELECT * FROM ${ref("dwh_silver", "ml_features_customer")}
+      WHERE days_since_last_order <= 180 -- Only predict for active customers to find who is "At Risk"
+    )
+  )

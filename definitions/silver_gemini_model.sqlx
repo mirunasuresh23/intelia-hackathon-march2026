@@ -1,0 +1,11 @@
+config {
+  type: "operations",
+  hasOutput: true,
+  schema: "dwh_silver",
+  name: "gemini_model",
+  description: "BigQuery ML connection to Vertex AI Gemini"
+}
+
+CREATE OR REPLACE MODEL ${self()}
+REMOTE WITH CONNECTION `miruna-sandpit.us.vertex-ai-conn`
+OPTIONS (ENDPOINT = 'gemini-2.5-flash')

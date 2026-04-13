@@ -1,0 +1,51 @@
+config {
+  type: "table",
+  schema: "dwh_silver",
+  name: "ml_features_customer",
+  description: "Aggregated customer metrics used to train Machine Learning models"
+}
+
+WITH order_stats AS (
+  SELECT
+    customer_id,
+    COUNT(order_id) as total_orders,
+    SUM(total_amount) as total_spend,
+    AVG(total_amount) as avg_order_value,
+    SUM(discount_amount) as total_discount_amount,
+    DATE_DIFF(CURRENT_DATE(), DATE(MAX(order_date)), DAY) as days_since_last_order
+  FROM
+    ${ref("dwh_silver", "orders")}
+  GROUP BY
+    customer_id
+),
+return_stats AS (
+  SELECT
+    o.customer_id,
+    COUNT(oi.order_item_id) as total_items_bought,
+    SUM(CAST(oi.is_returned AS INT64)) as total_items_returned
+  FROM
+    ${ref("dwh_silver", "order_items")} oi
+  JOIN ${ref("dwh_silver", "orders")} o ON oi.order_id = o.order_id
+  GROUP BY
+    o.customer_id
+)
+
+SELECT
+  c.customer_id,
+  c.city,
+  c.country,
+  c.loyalty_points,
+  c.customer_tier,
+  DATE_DIFF(CURRENT_DATE(), DATE(c.registration_date), DAY) as tenure_days,
+  COALESCE(os.total_orders, 0) as total_orders,
+  COALESCE(os.total_spend, 0) as total_spend,
+  COALESCE(os.avg_order_value, 0) as avg_order_value,
+  COALESCE(os.total_discount_amount, 0) as total_discount_amount,
+  COALESCE(os.days_since_last_order, 999) as days_since_last_order,
+  COALESCE(rs.total_items_bought, 0) as total_items_bought,
+  COALESCE(rs.total_items_returned, 0) as total_items_returned,
+  SAFE_DIVIDE(COALESCE(rs.total_items_returned, 0), COALESCE(rs.total_items_bought, 1)) as return_rate
+FROM
+  ${ref("dwh_silver", "customers")} c
+LEFT JOIN order_stats os ON c.customer_id = os.customer_id
+LEFT JOIN return_stats rs ON c.customer_id = rs.customer_id
