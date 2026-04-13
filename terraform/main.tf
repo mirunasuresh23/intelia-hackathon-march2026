@@ -5,6 +5,11 @@ terraform {
       version = "~> 5.0"
     }
   }
+
+  backend "gcs" {
+    bucket  = "miruna-intelia-hackathon-source-code"
+    prefix  = "terraform/state"
+  }
 }
 
 provider "google" {
