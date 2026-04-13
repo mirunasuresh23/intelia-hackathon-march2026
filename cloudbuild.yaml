@@ -1,0 +1,50 @@
+steps:
+  # Step 1: Initialize Terraform
+  - id: 'tf-init'
+    name: 'hashicorp/terraform:1.5'
+    entrypoint: 'sh'
+    dir: 'terraform'
+    args: 
+      - '-c'
+      - 'terraform init'
+
+  # Step 2: Plan Terraform Infrastructure
+  - id: 'tf-plan'
+    name: 'hashicorp/terraform:1.5'
+    entrypoint: 'sh'
+    dir: 'terraform'
+    args: 
+      - '-c'
+      - 'terraform plan'
+
+  # Step 3: Automatically apply Terraform (Typically only runs on main branch)
+  - id: 'tf-apply'
+    name: 'hashicorp/terraform:1.5'
+    entrypoint: 'sh'
+    dir: 'terraform'
+    args: 
+      - '-c'
+      - 'terraform apply -auto-approve'
+
+  # (Optional) Step 4: Deploy the Cloud Function directly via gcloud instead of Terraform Zip
+  # This separates infrastructure from application code
+  - id: 'deploy-archive-function'
+    name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+    entrypoint: 'sh'
+    args:
+      - '-c'
+      - |
+        gcloud functions deploy archive-gcs-function \
+          --gen2 \
+          --runtime python311 \
+          --region us-central1 \
+          --source ./functions/archive_gcs \
+          --entry-point archive_gcs_files \
+          --trigger-http \
+          --allow-unauthenticated
+
+options:
+  logging: CLOUD_LOGGING_ONLY
+
+# timeout for the build
+timeout: '1200s'
