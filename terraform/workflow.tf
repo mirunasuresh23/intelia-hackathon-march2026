@@ -95,6 +95,26 @@ resource "google_project_iam_member" "workflow_executor" {
   member  = "serviceAccount:${google_service_account.workflow_sa.email}"
 }
 
+# Grant BigQuery permissions to execute Dataform queries
+resource "google_project_iam_member" "workflow_bq_editor" {
+  project = var.project_id
+  role    = "roles/bigquery.dataEditor"
+  member  = "serviceAccount:${google_service_account.workflow_sa.email}"
+}
+
+resource "google_project_iam_member" "workflow_bq_user" {
+  project = var.project_id
+  role    = "roles/bigquery.jobUser"
+  member  = "serviceAccount:${google_service_account.workflow_sa.email}"
+}
+
+# Grant Service Account User permission to bypass Strict ActAs checks
+resource "google_project_iam_member" "workflow_sa_user" {
+  project = var.project_id
+  role    = "roles/iam.serviceAccountUser"
+  member  = "serviceAccount:${google_service_account.workflow_sa.email}"
+}
+
 # 5. Define the Cloud Workflow
 resource "google_workflows_workflow" "orchestrator" {
   name            = "dataform-orchestrator"
@@ -107,7 +127,7 @@ resource "google_workflows_workflow" "orchestrator" {
     GCP_PROJECT_ID       = var.project_id
     GCP_LOCATION         = "us-central1"
     ARCHIVE_FUNCTION_URL = google_cloudfunctions2_function.archive_function.service_config[0].uri
-    DATAFORM_SA          = "service-${data.google_project.current.number}@gcp-sa-dataform.iam.gserviceaccount.com"
+    DATAFORM_SA          = google_service_account.workflow_sa.email
   }
 
   source_contents = file("${path.module}/../workflow.yaml")
