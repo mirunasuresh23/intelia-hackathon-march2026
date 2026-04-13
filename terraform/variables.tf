@@ -19,7 +19,7 @@ variable "bucket_name" {
 variable "git_repo_url" {
   description = "The URL of the Git repository for Dataform"
   type        = string
-  default     = "https://github.com/mirunasuresh/intelia-hackathon-2026.git"
+  default     = "https://github.com/mirunasuresh23/intelia-hackathon-march2026.git"
 }
 
 variable "source_bucket_name" {
