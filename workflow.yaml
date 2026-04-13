@@ -26,6 +26,8 @@ main:
             type: OAuth2
           body:
             compilationResult: ${compilationResult.body.name}
+            invocationConfig:
+              serviceAccount: ${sys.get_env("DATAFORM_SA")}
         result: invocationResult
 
     - getInvocation:
