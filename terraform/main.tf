@@ -96,7 +96,7 @@ resource "google_bigquery_table" "bronze_customers" {
   external_data_configuration {
     autodetect    = true
     source_format = "CSV"
-    source_uris   = ["gs://${var.bucket_name}/customers.csv"]
+    source_uris   = ["gs://${var.bucket_name}/customers_batch_0*.csv"]
     csv_options {
       skip_leading_rows = 1
       quote             = "\""
@@ -114,7 +114,7 @@ resource "google_bigquery_table" "bronze_products" {
   external_data_configuration {
     autodetect    = true
     source_format = "CSV"
-    source_uris   = ["gs://${var.bucket_name}/products.csv"]
+    source_uris   = ["gs://${var.bucket_name}/products_batch_0*.csv"]
     csv_options { 
       skip_leading_rows = 1 
       quote             = "\""
@@ -129,7 +129,7 @@ resource "google_bigquery_table" "bronze_orders" {
   external_data_configuration {
     autodetect    = true
     source_format = "CSV"
-    source_uris   = ["gs://${var.bucket_name}/orders.csv"]
+    source_uris   = ["gs://${var.bucket_name}/orders_batch_0*.csv"]
     csv_options { 
       skip_leading_rows = 1 
       quote             = "\""
@@ -144,7 +144,7 @@ resource "google_bigquery_table" "bronze_order_items" {
   external_data_configuration {
     autodetect    = true
     source_format = "CSV"
-    source_uris   = ["gs://${var.bucket_name}/order_items.csv"]
+    source_uris   = ["gs://${var.bucket_name}/order_items_batch_0*.csv"]
     csv_options { 
       skip_leading_rows = 1 
       quote             = "\""
