@@ -72,6 +72,17 @@ resource "google_secret_manager_secret" "dataform_git_auth" {
   depends_on = [google_project_service.secretmanager]
 }
 
+resource "google_secret_manager_secret_version" "git_auth_version" {
+  secret      = google_secret_manager_secret.dataform_git_auth.id
+  secret_data = "dummy-pat-token-replace-me"
+}
+
+resource "google_secret_manager_secret_iam_member" "dataform_secret_accessor" {
+  secret_id = google_secret_manager_secret.dataform_git_auth.id
+  role      = "roles/secretmanager.secretAccessor"
+  member    = "serviceAccount:service-${data.google_project.project.number}@gcp-sa-dataform.iam.gserviceaccount.com"
+}
+
 # 3. Datasets
 resource "google_bigquery_dataset" "bronze" {
   dataset_id = "dwh_bronze"
@@ -285,7 +296,7 @@ resource "google_dataform_repository" "repo" {
   git_remote_settings {
     url                                 = var.git_repo_url
     default_branch                      = "main"
-    authentication_token_secret_version = "$${google_secret_manager_secret.dataform_git_auth.id}/versions/latest"
+    authentication_token_secret_version = google_secret_manager_secret_version.git_auth_version.id
   }
 
   depends_on = [google_project_service.dataform]
