@@ -40,8 +40,7 @@ steps:
           --region us-central1 \
           --source ./functions/archive_gcs \
           --entry-point archive_gcs_files \
-          --trigger-http \
-          --allow-unauthenticated
+          --trigger-http
 
 options:
   logging: CLOUD_LOGGING_ONLY
