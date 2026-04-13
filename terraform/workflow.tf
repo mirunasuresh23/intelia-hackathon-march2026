@@ -139,3 +139,40 @@ resource "google_cloud_scheduler_job" "daily_trigger" {
     google_project_service.cloudscheduler
   ]
 }
+
+
+# Find the project number for the default Cloud Build service account
+data "google_project" "current" {}
+
+# Grant the default Cloud Build Service Account the standard Editor role 
+# (Necessary so Terraform can manage your BigQuery datasets and IAMs!)
+resource "google_project_iam_member" "cloudbuild_editor" {
+  project = var.project_id
+  role    = "roles/editor"
+  member  = "serviceAccount:${data.google_project.current.number}@cloudbuild.gserviceaccount.com"
+}
+
+# Optional: Add roles/resourcemanager.projectIamAdmin if Terraform manages Service Account roles 
+resource "google_project_iam_member" "cloudbuild_iam" {
+  project = var.project_id
+  role    = "roles/resourcemanager.projectIamAdmin"
+  member  = "serviceAccount:${data.google_project.current.number}@cloudbuild.gserviceaccount.com"
+}
+
+# The actual Trigger Deployment (Commented out until repository is manually linked in console)
+# resource "google_cloudbuild_trigger" "main_push_trigger" {
+#   name        = "deploy-intelia-hackathon"
+#   location    = "global"
+#   description = "Triggers cloudbuild.yaml on push to main branch"
+
+#   github {
+#     owner = "mirunasuresh23"
+#     name  = "intelia-hackathon-march2026"
+#     push {
+#       branch = "^main$"
+#     }
+#   }
+
+#   filename = "cloudbuild.yaml"
+# }
+
