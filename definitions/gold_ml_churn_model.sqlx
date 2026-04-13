@@ -1,0 +1,26 @@
+config {
+  type: "operations",
+  hasOutput: true,
+  schema: "dwh_gold",
+  name: "ml_churn_model",
+  description: "BigQuery ML Logistic Regression model to predict customer churn probability"
+}
+
+CREATE OR REPLACE MODEL ${self()}
+OPTIONS(
+  model_type='logistic_reg',
+  input_label_cols=['is_churned'],
+  auto_class_weights=TRUE,
+  data_split_method='AUTO_SPLIT'
+) AS
+SELECT
+  total_spend,
+  total_orders,
+  avg_order_value,
+  return_rate,
+  tenure_days,
+  loyalty_points,
+  -- For training purposes, we consider users who haven't ordered in 180 days as formally churned.
+  IF(days_since_last_order > 180, 1, 0) as is_churned
+FROM
+  ${ref("dwh_silver", "ml_features_customer")}

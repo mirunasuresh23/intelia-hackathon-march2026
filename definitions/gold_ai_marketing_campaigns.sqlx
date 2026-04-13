@@ -1,0 +1,40 @@
+config {
+  type: "table",
+  schema: "dwh_gold",
+  name: "ai_marketing_campaigns",
+  description: "Personalized recovery emails written by Gemini 1.5 Pro for At-Risk Customers"
+}
+
+SELECT
+  customer_id,
+  city,
+  customer_tier,
+  churn_probability,
+  ml_generate_text_llm_result AS generated_email
+FROM
+  ML.GENERATE_TEXT(
+    MODEL `miruna-sandpit.dwh_silver.gemini_model`,
+    (
+      SELECT
+        c.customer_id,
+        c.city,
+        c.customer_tier,
+        p.predicted_is_churned_probs[OFFSET(0)].prob as churn_probability,
+        CONCAT(
+          'Write a very short, friendly, personalized 3-sentence email to a precious customer in ', COALESCE(c.city, 'your city'), 
+          ' who is currently a ', COALESCE(c.customer_tier, 'standard'), ' tier loyalty member. Our ML algorithm predicts they will churn with a probability of ', 
+          ROUND(p.predicted_is_churned_probs[OFFSET(0)].prob * 100, 1), 
+          '%. Offer them a warm, custom 20% discount code to come back.'
+        ) AS prompt
+      FROM
+        ${ref("dwh_gold", "customer_churn_predictions")} p
+      JOIN ${ref("dwh_silver", "ml_features_customer")} c ON p.customer_id = c.customer_id
+      WHERE p.predicted_is_churned = 1
+      LIMIT 50 -- Limiting for Hackathon API payload costs
+    ),
+    STRUCT(
+      0.6 AS temperature,
+      250 AS max_output_tokens,
+      TRUE AS flatten_json_output
+    )
+  )

@@ -96,24 +96,24 @@ resource "google_project_iam_member" "workflow_executor" {
 }
 
 # Grant BigQuery permissions to execute Dataform queries
-resource "google_project_iam_member" "workflow_bq_editor" {
-  project = var.project_id
-  role    = "roles/bigquery.dataEditor"
-  member  = "serviceAccount:${google_service_account.workflow_sa.email}"
-}
-
-resource "google_project_iam_member" "workflow_bq_user" {
-  project = var.project_id
-  role    = "roles/bigquery.jobUser"
-  member  = "serviceAccount:${google_service_account.workflow_sa.email}"
-}
-
+# resource "google_project_iam_member" "workflow_bq_editor" {
+#   project = var.project_id
+#   role    = "roles/bigquery.dataEditor"
+#   member  = "serviceAccount:${google_service_account.workflow_sa.email}"
+# }
+# 
+# resource "google_project_iam_member" "workflow_bq_user" {
+#   project = var.project_id
+#   role    = "roles/bigquery.jobUser"
+#   member  = "serviceAccount:${google_service_account.workflow_sa.email}"
+# }
+# 
 # Grant Service Account User permission to bypass Strict ActAs checks
-resource "google_project_iam_member" "workflow_sa_user" {
-  project = var.project_id
-  role    = "roles/iam.serviceAccountUser"
-  member  = "serviceAccount:${google_service_account.workflow_sa.email}"
-}
+# resource "google_project_iam_member" "workflow_sa_user" {
+#   project = var.project_id
+#   role    = "roles/iam.serviceAccountUser"
+#   member  = "serviceAccount:${google_service_account.workflow_sa.email}"
+# }
 
 # 5. Define the Cloud Workflow
 resource "google_workflows_workflow" "orchestrator" {

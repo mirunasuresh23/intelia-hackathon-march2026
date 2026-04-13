@@ -1,0 +1,25 @@
+config {
+  type: "operations",
+  hasOutput: true,
+  schema: "dwh_gold",
+  name: "ml_segmentation_model",
+  description: "BigQuery ML K-Means Clustering model to train customer profiles"
+}
+
+CREATE OR REPLACE MODEL ${self()}
+OPTIONS(
+  model_type='kmeans',
+  num_clusters=4,
+  standardize_features=TRUE,
+  kmeans_init_method='KMEANS++'
+) AS
+SELECT
+  total_spend,
+  total_orders,
+  avg_order_value,
+  days_since_last_order,
+  return_rate,
+  tenure_days,
+  loyalty_points
+FROM
+  ${ref("dwh_silver", "ml_features_customer")}
