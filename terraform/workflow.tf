@@ -107,6 +107,7 @@ resource "google_workflows_workflow" "orchestrator" {
     GCP_PROJECT_ID       = var.project_id
     GCP_LOCATION         = "us-central1"
     ARCHIVE_FUNCTION_URL = google_cloudfunctions2_function.archive_function.service_config[0].uri
+    DATAFORM_SA          = "service-${data.google_project.current.number}@gcp-sa-dataform.iam.gserviceaccount.com"
   }
 
   source_contents = file("${path.module}/../workflow.yaml")
