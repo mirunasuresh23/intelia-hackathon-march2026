@@ -134,6 +134,7 @@ EOF
       "gs://${var.bucket_name}/*_customers_delta.csv"
     ]
     csv_options {
+      allow_jagged_rows = true
       skip_leading_rows = 1
       quote             = "\""
     }
@@ -183,6 +184,7 @@ EOF
       "gs://${var.bucket_name}/*_products_delta.csv"
     ]
     csv_options { 
+      allow_jagged_rows = true
       skip_leading_rows = 1 
       quote             = "\""
     }
@@ -233,6 +235,7 @@ EOF
       "gs://${var.bucket_name}/*_orders_delta.csv"
     ]
     csv_options { 
+      allow_jagged_rows = true
       skip_leading_rows = 1 
       quote             = "\""
     }
