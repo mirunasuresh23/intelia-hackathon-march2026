@@ -1,5 +1,6 @@
 config {
-  type: "table",
+  type: "incremental",
+  uniqueKey: ["customer_id"],
   schema: "dwh_gold",
   name: "ai_marketing_campaigns",
   description: "Personalized recovery emails written by Gemini 1.5 Pro for At-Risk Customers"

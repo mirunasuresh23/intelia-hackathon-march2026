@@ -1,5 +1,6 @@
 config {
-  type: "table",
+  type: "incremental",
+  uniqueKey: ["customer_id"],
   schema: "dwh_gold",
   name: "customer_churn_predictions",
   description: "Live materialized churn probability for all active customers"

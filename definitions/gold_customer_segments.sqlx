@@ -1,5 +1,6 @@
 config {
-  type: "table",
+  type: "incremental",
+  uniqueKey: ["customer_id"],
   schema: "dwh_gold",
   name: "customer_segments",
   description: "Executed customer segment predictions materialized for dashboarding"

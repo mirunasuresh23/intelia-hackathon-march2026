@@ -96,11 +96,39 @@ resource "google_bigquery_dataset" "gold" {
 resource "google_bigquery_table" "bronze_customers" {
   dataset_id = google_bigquery_dataset.bronze.dataset_id
   table_id   = "customers"
-  deletion_protection = false
+  schema = <<EOF
+[
+  {"name": "customer_id", "type": "STRING"},
+  {"name": "first_name", "type": "STRING"},
+  {"name": "last_name", "type": "STRING"},
+  {"name": "email", "type": "STRING"},
+  {"name": "phone", "type": "STRING"},
+  {"name": "date_of_birth", "type": "DATE"},
+  {"name": "gender", "type": "STRING"},
+  {"name": "registration_date", "type": "TIMESTAMP"},
+  {"name": "country", "type": "STRING"},
+  {"name": "city", "type": "STRING"},
+  {"name": "acquisition_channel", "type": "STRING"},
+  {"name": "customer_tier", "type": "STRING"},
+  {"name": "is_email_subscribed", "type": "BOOLEAN"},
+  {"name": "is_sms_subscribed", "type": "BOOLEAN"},
+  {"name": "preferred_device", "type": "STRING"},
+  {"name": "preferred_category", "type": "STRING"},
+  {"name": "loyalty_points", "type": "INTEGER"},
+  {"name": "account_status", "type": "STRING"},
+  {"name": "last_login_date", "type": "TIMESTAMP"},
+  {"name": "referral_source_id", "type": "STRING"},
+  {"name": "marketing_segment", "type": "STRING"},
+  {"name": "_delta_type", "type": "STRING"},
+  {"name": "_batch_id", "type": "STRING"},
+  {"name": "_batch_date", "type": "STRING"}
+]
+EOF
 
   external_data_configuration {
-    autodetect    = true
-    source_format = "CSV"
+    autodetect            = false
+    ignore_unknown_values = true
+    source_format         = "CSV"
     source_uris   = [
       "gs://${var.bucket_name}/customers.csv",
       "gs://${var.bucket_name}/*_customers_delta.csv"
@@ -118,10 +146,38 @@ resource "google_bigquery_table" "bronze_customers" {
 resource "google_bigquery_table" "bronze_products" {
   dataset_id = google_bigquery_dataset.bronze.dataset_id
   table_id   = "products"
+  schema = <<EOF
+[
+  {"name": "product_id", "type": "STRING"},
+  {"name": "sku", "type": "STRING"},
+  {"name": "product_name", "type": "STRING"},
+  {"name": "category", "type": "STRING"},
+  {"name": "subcategory", "type": "STRING"},
+  {"name": "brand", "type": "STRING"},
+  {"name": "unit_cost", "type": "FLOAT"},
+  {"name": "unit_price", "type": "FLOAT"},
+  {"name": "discount_eligible", "type": "BOOLEAN"},
+  {"name": "stock_quantity", "type": "INTEGER"},
+  {"name": "weight_kg", "type": "FLOAT"},
+  {"name": "supplier_id", "type": "STRING"},
+  {"name": "is_active", "type": "BOOLEAN"},
+  {"name": "created_date", "type": "TIMESTAMP"},
+  {"name": "last_updated_date", "type": "TIMESTAMP"},
+  {"name": "average_rating", "type": "FLOAT"},
+  {"name": "review_count", "type": "INTEGER"},
+  {"name": "return_rate", "type": "FLOAT"},
+  {"name": "tags", "type": "STRING"},
+  {"name": "_delta_type", "type": "STRING"},
+  {"name": "_batch_id", "type": "STRING"},
+  {"name": "_batch_date", "type": "STRING"}
+]
+EOF
+
   deletion_protection = false
   external_data_configuration {
-    autodetect    = true
-    source_format = "CSV"
+    autodetect            = false
+    ignore_unknown_values = true
+    source_format         = "CSV"
     source_uris   = [
       "gs://${var.bucket_name}/products.csv",
       "gs://${var.bucket_name}/*_products_delta.csv"
@@ -136,10 +192,42 @@ resource "google_bigquery_table" "bronze_products" {
 resource "google_bigquery_table" "bronze_orders" {
   dataset_id = google_bigquery_dataset.bronze.dataset_id
   table_id   = "orders"
+  schema = <<EOF
+[
+  {"name": "order_id", "type": "STRING"},
+  {"name": "customer_id", "type": "STRING"},
+  {"name": "order_date", "type": "TIMESTAMP"},
+  {"name": "order_status", "type": "STRING"},
+  {"name": "payment_method", "type": "STRING"},
+  {"name": "payment_status", "type": "STRING"},
+  {"name": "shipping_address_country", "type": "STRING"},
+  {"name": "shipping_address_city", "type": "STRING"},
+  {"name": "shipping_method", "type": "STRING"},
+  {"name": "shipping_cost", "type": "FLOAT"},
+  {"name": "subtotal", "type": "FLOAT"},
+  {"name": "discount_code", "type": "STRING"},
+  {"name": "discount_amount", "type": "FLOAT"},
+  {"name": "tax_amount", "type": "FLOAT"},
+  {"name": "total_amount", "type": "FLOAT"},
+  {"name": "session_id", "type": "STRING"},
+  {"name": "device_type", "type": "STRING"},
+  {"name": "acquisition_channel_at_order", "type": "STRING"},
+  {"name": "coupon_used", "type": "BOOLEAN"},
+  {"name": "is_first_order", "type": "BOOLEAN"},
+  {"name": "fulfillment_center", "type": "STRING"},
+  {"name": "estimated_delivery_date", "type": "TIMESTAMP"},
+  {"name": "actual_delivery_date", "type": "TIMESTAMP"},
+  {"name": "_delta_type", "type": "STRING"},
+  {"name": "_batch_id", "type": "STRING"},
+  {"name": "_batch_date", "type": "STRING"}
+]
+EOF
+
   deletion_protection = false
   external_data_configuration {
-    autodetect    = true
-    source_format = "CSV"
+    autodetect            = false
+    ignore_unknown_values = true
+    source_format         = "CSV"
     source_uris   = [
       "gs://${var.bucket_name}/orders.csv",
       "gs://${var.bucket_name}/*_orders_delta.csv"
@@ -154,10 +242,28 @@ resource "google_bigquery_table" "bronze_orders" {
 resource "google_bigquery_table" "bronze_order_items" {
   dataset_id = google_bigquery_dataset.bronze.dataset_id
   table_id   = "order_items"
-  deletion_protection = false
+  schema = <<EOF
+[
+  {"name": "order_item_id", "type": "STRING"},
+  {"name": "order_id", "type": "STRING"},
+  {"name": "product_id", "type": "STRING"},
+  {"name": "quantity", "type": "INTEGER"},
+  {"name": "unit_price_at_purchase", "type": "FLOAT"},
+  {"name": "discount_applied", "type": "FLOAT"},
+  {"name": "line_total", "type": "FLOAT"},
+  {"name": "is_returned", "type": "BOOLEAN"},
+  {"name": "return_reason", "type": "STRING"},
+  {"name": "return_date", "type": "TIMESTAMP"},
+  {"name": "_delta_type", "type": "STRING"},
+  {"name": "_batch_id", "type": "STRING"},
+  {"name": "_batch_date", "type": "STRING"}
+]
+EOF
+
   external_data_configuration {
-    autodetect    = true
-    source_format = "CSV"
+    autodetect            = false
+    ignore_unknown_values = true
+    source_format         = "CSV"
     source_uris   = [
       "gs://${var.bucket_name}/order_items.csv",
       "gs://${var.bucket_name}/*_order_items_delta.csv"

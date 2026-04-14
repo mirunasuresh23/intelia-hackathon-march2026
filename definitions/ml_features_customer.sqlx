@@ -1,5 +1,6 @@
 config {
-  type: "table",
+  type: "incremental",
+  uniqueKey: ["customer_id"],
   schema: "dwh_silver",
   name: "ml_features_customer",
   description: "Aggregated customer metrics used to train Machine Learning models"

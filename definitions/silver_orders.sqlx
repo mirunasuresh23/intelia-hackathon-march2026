@@ -1,5 +1,6 @@
 config {
-  type: "table",
+  type: "incremental",
+  uniqueKey: ["order_id"],
   schema: "dwh_silver",
   name: "orders",
   description: "Cleaned and typed order data"
@@ -32,3 +33,4 @@ SELECT
   CURRENT_TIMESTAMP() as load_timestamp
 FROM
   ${ref("dwh_bronze", "orders")}
+QUALIFY ROW_NUMBER() OVER(PARTITION BY order_id ORDER BY CAST(_batch_date AS STRING) DESC) = 1
