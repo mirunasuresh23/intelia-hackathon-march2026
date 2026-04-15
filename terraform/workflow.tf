@@ -128,6 +128,7 @@ resource "google_workflows_workflow" "orchestrator" {
     GCP_LOCATION         = "us-central1"
     ARCHIVE_FUNCTION_URL = google_cloudfunctions2_function.archive_function.service_config[0].uri
     DATAFORM_SA          = google_service_account.workflow_sa.email
+    BRONZE_BUCKET        = var.bucket_name
   }
 
   source_contents = file("${path.module}/../workflow.yaml")

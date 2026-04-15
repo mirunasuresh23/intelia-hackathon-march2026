@@ -274,6 +274,7 @@ EOF
       "gs://${var.bucket_name}/*_order_items_delta.csv"
     ]
     csv_options { 
+      allow_jagged_rows = true
       skip_leading_rows = 1 
       quote             = "\""
     }
@@ -332,8 +333,8 @@ resource "google_bigquery_table" "silver_products" {
   {"name": "weight_kg", "type": "FLOAT", "mode": "NULLABLE"},
   {"name": "supplier_id", "type": "STRING", "mode": "NULLABLE"},
   {"name": "is_active", "type": "BOOLEAN", "mode": "NULLABLE"},
-  {"name": "created_date", "type": "TIMESTAMP", "mode": "NULLABLE"},
-  {"name": "last_updated_date", "type": "TIMESTAMP", "mode": "NULLABLE"},
+  {"name": "created_date", "type": "DATE", "mode": "NULLABLE"},
+  {"name": "last_updated_date", "type": "DATE", "mode": "NULLABLE"},
   {"name": "average_rating", "type": "FLOAT", "mode": "NULLABLE"},
   {"name": "review_count", "type": "INTEGER", "mode": "NULLABLE"},
   {"name": "return_rate", "type": "FLOAT", "mode": "NULLABLE"},
@@ -370,8 +371,8 @@ resource "google_bigquery_table" "silver_orders" {
   {"name": "coupon_used", "type": "BOOLEAN", "mode": "NULLABLE"},
   {"name": "is_first_order", "type": "BOOLEAN", "mode": "NULLABLE"},
   {"name": "fulfillment_center", "type": "STRING", "mode": "NULLABLE"},
-  {"name": "estimated_delivery_date", "type": "TIMESTAMP", "mode": "NULLABLE"},
-  {"name": "actual_delivery_date", "type": "TIMESTAMP", "mode": "NULLABLE"},
+  {"name": "estimated_delivery_date", "type": "DATE", "mode": "NULLABLE"},
+  {"name": "actual_delivery_date", "type": "DATE", "mode": "NULLABLE"},
   {"name": "load_timestamp", "type": "TIMESTAMP", "mode": "NULLABLE"}
 ]
 EOF
@@ -392,7 +393,7 @@ resource "google_bigquery_table" "silver_order_items" {
   {"name": "line_total", "type": "FLOAT", "mode": "NULLABLE"},
   {"name": "is_returned", "type": "BOOLEAN", "mode": "NULLABLE"},
   {"name": "return_reason", "type": "STRING", "mode": "NULLABLE"},
-  {"name": "return_date", "type": "TIMESTAMP", "mode": "NULLABLE"},
+  {"name": "return_date", "type": "DATE", "mode": "NULLABLE"},
   {"name": "load_timestamp", "type": "TIMESTAMP", "mode": "NULLABLE"}
 ]
 EOF

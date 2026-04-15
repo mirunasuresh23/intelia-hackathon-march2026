@@ -62,7 +62,7 @@ main:
           auth:
             type: OIDC
           body:
-            bucket_name: "dwh_bronze_bucket" # This will be passed via terraform variables ideally
+            bucket_name: ${sys.get_env("BRONZE_BUCKET")}
         result: archiveResult
 
     - final:
