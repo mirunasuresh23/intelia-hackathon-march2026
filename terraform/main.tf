@@ -125,6 +125,7 @@ resource "google_bigquery_table" "bronze_customers" {
 ]
 EOF
 
+  deletion_protection = false
   external_data_configuration {
     autodetect            = false
     ignore_unknown_values = true
@@ -263,6 +264,7 @@ resource "google_bigquery_table" "bronze_order_items" {
 ]
 EOF
 
+  deletion_protection = false
   external_data_configuration {
     autodetect            = false
     ignore_unknown_values = true
